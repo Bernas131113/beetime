@@ -416,7 +416,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
     { id: 5, emoji: '⚖️', title: 'Jury Member', desc: 'Desbloqueado ao avaliares pelo menos 5 episódios com estrelas.', unlocked: stats.totalEpisodes > 4 },
     { id: 6, emoji: '🦉', title: 'Night Owl', desc: 'Desbloqueado ao registares visualizações de madrugada (00h-05h).', unlocked: stats.totalEpisodes > 0 },
     { id: 7, emoji: '🍿', title: 'Binge Watcher', desc: 'Desbloqueado ao veres uma temporada inteira de uma série num só dia.', unlocked: stats.totalEpisodes >= 8 },
-    { id: 8, emoji: '🚀', title: 'Pioneer', desc: 'Desbloqueado ao assistires à estreia mundial de um episódio no BeeTime.', unlocked: followedShows.length > 0 },
+    { id: 8, emoji: '🚀', title: 'Pioneer', desc: 'Desbloqueado ao veres a estreia mundial de um episódio no BeeTime.', unlocked: followedShows.length > 0 },
     { id: 9, emoji: '✍️', title: 'Critic', desc: 'Desbloqueado ao submeteres reações e notas textuais.', unlocked: stats.totalEpisodes > 0 },
     { id: 10, emoji: '❤️', title: 'Lover', desc: 'Desbloqueado ao dares gostos em comentários ou reações de outros.', unlocked: true },
     { id: 11, emoji: '🗄️', title: 'Collector', desc: 'Desbloqueado ao teres mais de 50 séries na tua Watchlist.', unlocked: followedShows.length >= 50 },
@@ -685,7 +685,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
 
               {/* 11. Time to watch all */}
               <div style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '13.5px', fontWeight: '900', color: 'var(--text-secondary)' }}>Tempo para assistir tudo</span>
+                <span style={{ fontSize: '13.5px', fontWeight: '900', color: 'var(--text-secondary)' }}>Tempo para ver tudo</span>
                 <span style={{ fontSize: '40px', fontWeight: '900', color: 'var(--text-primary)', margin: '4px 0' }}>{advStats.tvTimeToWatchAllHours}</span>
                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '800' }}>HORAS</span>
               </div>
@@ -868,7 +868,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
 
               {/* 8. Time to watch all movies */}
               <div style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '13.5px', fontWeight: '900', color: 'var(--text-secondary)' }}>Tempo para assistir tudo</span>
+                <span style={{ fontSize: '13.5px', fontWeight: '900', color: 'var(--text-secondary)' }}>Tempo para ver tudo</span>
                 <span style={{ fontSize: '40px', fontWeight: '900', color: 'var(--text-primary)', margin: '4px 0' }}>{advStats.movieTimeToWatchAllHours}</span>
                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '800' }}>HORAS</span>
               </div>
@@ -1467,7 +1467,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                 onClick={handleSaveProfile}
                 style={{ background: 'none', border: 'none', color: '#0066cc', fontWeight: '900', fontSize: '14px', cursor: 'pointer', padding: 0 }}
               >
-                SALVAR
+                GUARDAR
               </button>
             </div>
 

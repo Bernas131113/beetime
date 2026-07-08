@@ -447,7 +447,7 @@ export default function ImportWizard({ onImportComplete, onClose }) {
         current: processedCount,
         total: totalToImport,
         itemName: show.name,
-        status: `Sincronizando série com TMDB (${processedCount}/${totalToImport})...`
+        status: `A sincronizar série com TMDB (${processedCount}/${totalToImport})...`
       });
 
       try {
@@ -505,7 +505,7 @@ export default function ImportWizard({ onImportComplete, onClose }) {
         current: processedCount,
         total: totalToImport,
         itemName: movie.name,
-        status: `Sincronizando filme com TMDB (${processedCount}/${totalToImport})...`
+        status: `A sincronizar filme com TMDB (${processedCount}/${totalToImport})...`
       });
 
       try {

@@ -209,7 +209,7 @@ export default function MovieDetails({ movieId, onBack, onNavigateToShow, onNavi
     return (
       <div className="loader-container">
         <div className="tvtime-loader" />
-        {savingMovie && <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>Carregando dados do filme do TMDB...</p>}
+        {savingMovie && <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>A carregar dados do filme do TMDB...</p>}
       </div>
     );
   }
@@ -230,7 +230,7 @@ export default function MovieDetails({ movieId, onBack, onNavigateToShow, onNavi
 
   // Release/Watch Dates Formatted
   const releaseDateFormatted = movie.release_date ? new Date(movie.release_date).toLocaleDateString('pt-PT') : 'S/ Data';
-  const watchDateFormatted = movie.watched_at ? new Date(movie.watched_at).toLocaleDateString('pt-PT') : 'Por assistir';
+  const watchDateFormatted = movie.watched_at ? new Date(movie.watched_at).toLocaleDateString('pt-PT') : 'Por ver';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-primary)', paddingBottom: '40px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple Color Emoji", sans-serif' }}>

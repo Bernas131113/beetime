@@ -262,7 +262,7 @@ export default function ShowDetails({ showId, onBack, onNavigateToShow, onNaviga
     return (
       <div className="loader-container">
         <div className="tvtime-loader" />
-        {savingShow && <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>Carregando dados da série do TMDB...</p>}
+        {savingShow && <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>A carregar dados da série do TMDB...</p>}
       </div>
     );
   }
