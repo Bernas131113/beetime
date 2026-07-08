@@ -69,6 +69,11 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
 .tvtime-loader {
   width: 44px;
   height: 44px;

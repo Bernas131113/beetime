@@ -80,9 +80,13 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
 
   // Grid sub-view for "Ver todas as séries/filmes" from profile
   const [gridView, setGridView] = useState(null); // null | 'series' | 'filmes'
-  const [gridFilter, setGridFilter] = useState('all'); // 'all' | 'watching' | 'finished' | 'not-started'
+  const [gridFilter, setGridFilter] = useState('all'); // 'all' | 'watching' | 'finished' | 'not-started' | 'up-to-date' | 'stopped'
+  const [gridSort, setGridSort] = useState('last-watched'); // 'last-watched' | 'last-added' | 'alpha'
   const [showGridFilters, setShowGridFilters] = useState(false);
   const [gridViewMode, setGridViewMode] = useState('grid'); // 'grid' | 'list'
+  // Pending states (applied only when user taps APLICAR)
+  const [pendingFilter, setPendingFilter] = useState('all');
+  const [pendingSort, setPendingSort] = useState('last-watched');
 
   const loadProfile = async () => {
     try {
@@ -439,7 +443,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
     const filteredItems = items; // For now show all — filters can be expanded later
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)', zIndex: 500, overflowY: 'auto' }}>
         {/* Header bar */}
         <div style={{
           display: 'flex',
@@ -550,77 +554,182 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
         )}
 
         {/* Floating FILTROS pill button at bottom */}
-        <div style={{
-          position: 'fixed',
-          bottom: 'calc(30px + env(safe-area-inset-bottom, 0px))',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 200
-        }}>
-          <button 
-            onClick={() => setShowGridFilters(!showGridFilters)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'var(--yellow-brand)',
-              color: '#000',
-              border: 'none',
-              borderRadius: '24px',
-              padding: '12px 28px',
-              fontWeight: '900',
-              fontSize: '13px',
-              letterSpacing: '0.8px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
-            }}
-          >
-            <SlidersHorizontal size={16} />
-            FILTROS
-          </button>
-        </div>
-
-        {/* Filter dropdown (simple overlay) */}
-        {showGridFilters && (
+        {!showGridFilters && (
           <div style={{
             position: 'fixed',
-            bottom: 'calc(85px + env(safe-area-inset-bottom, 0px))',
+            bottom: 'calc(30px + env(safe-area-inset-bottom, 0px))',
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 210,
-            backgroundColor: 'var(--bg-secondary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '16px',
-            padding: '8px 0',
-            minWidth: '200px',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+            zIndex: 200
           }}>
-            {[
-              { key: 'all', label: 'Todas' },
-              { key: 'watching', label: 'A ver' },
-              { key: 'not-started', label: 'Por começar' },
-              { key: 'finished', label: 'Terminadas' }
-            ].map(f => (
-              <button
-                key={f.key}
-                onClick={() => { setGridFilter(f.key); setShowGridFilters(false); }}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  background: gridFilter === f.key ? 'rgba(255, 207, 0, 0.1)' : 'none',
-                  border: 'none',
-                  padding: '12px 20px',
-                  textAlign: 'left',
-                  color: gridFilter === f.key ? 'var(--yellow-brand)' : 'var(--text-primary)',
-                  fontWeight: gridFilter === f.key ? '900' : '700',
-                  fontSize: '14px',
-                  cursor: 'pointer'
-                }}
-              >
-                {f.label}
-              </button>
-            ))}
+            <button 
+              onClick={() => { setPendingFilter(gridFilter); setPendingSort(gridSort); setShowGridFilters(true); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: 'var(--yellow-brand)',
+                color: '#000',
+                border: 'none',
+                borderRadius: '24px',
+                padding: '12px 28px',
+                fontWeight: '900',
+                fontSize: '13px',
+                letterSpacing: '0.8px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+              }}
+            >
+              <SlidersHorizontal size={16} />
+              FILTROS
+            </button>
           </div>
+        )}
+
+        {/* Bottom Sheet Filter Panel */}
+        {showGridFilters && (
+          <>
+            {/* Dark overlay backdrop */}
+            <div 
+              onClick={() => setShowGridFilters(false)}
+              style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                zIndex: 300
+              }}
+            />
+
+            {/* Bottom sheet */}
+            <div style={{
+              position: 'fixed',
+              bottom: 0, left: 0, right: 0,
+              backgroundColor: '#fff',
+              borderRadius: '20px 20px 0 0',
+              zIndex: 310,
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+              animation: 'slideUp 0.3s ease-out'
+            }}>
+              {/* Ordenar por */}
+              <div style={{ padding: '24px 20px 16px 20px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#000', marginBottom: '14px' }}>Ordenar por</h3>
+                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                  {[
+                    { key: 'last-watched', label: isSeriesGrid ? 'Últimos assistidos' : 'Último item assistido' },
+                    { key: 'last-added', label: isSeriesGrid ? 'Últimos adicionados' : 'Último item adicionado' },
+                    { key: 'alpha', label: 'Alfabética' }
+                  ].map(s => (
+                    <button
+                      key={s.key}
+                      onClick={() => setPendingSort(s.key)}
+                      style={{
+                        flexShrink: 0,
+                        padding: '8px 16px',
+                        borderRadius: '20px',
+                        border: pendingSort === s.key ? 'none' : '1.5px solid #ddd',
+                        backgroundColor: pendingSort === s.key ? 'var(--yellow-brand)' : '#fff',
+                        color: '#000',
+                        fontWeight: '800',
+                        fontSize: '13px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: '1px', backgroundColor: '#eee', margin: '0 20px' }} />
+
+              {/* Progresso */}
+              <div style={{ padding: '16px 20px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#000', marginBottom: '8px' }}>Progresso</h3>
+                {(isSeriesGrid ? [
+                  { key: 'all', label: 'Todos' },
+                  { key: 'watching', label: 'A ver' },
+                  { key: 'not-started', label: 'Não comecei' },
+                  { key: 'up-to-date', label: 'Em dia' },
+                  { key: 'finished', label: 'Visto' },
+                  { key: 'stopped', label: 'Interrompidas' }
+                ] : [
+                  { key: 'all', label: 'Tudo' },
+                  { key: 'finished', label: 'Visto' },
+                  { key: 'not-watched', label: 'Não visto' }
+                ]).map(f => (
+                  <div
+                    key={f.key}
+                    onClick={() => setPendingFilter(f.key)}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '14px 0',
+                      borderBottom: '1px solid #f0f0f0',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{ fontSize: '15px', fontWeight: '700', color: '#000' }}>{f.label}</span>
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      border: pendingFilter === f.key ? 'none' : '2px solid #ccc',
+                      backgroundColor: pendingFilter === f.key ? 'var(--yellow-brand)' : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {pendingFilter === f.key && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom buttons: REPOR | APLICAR */}
+              <div style={{ display: 'flex', gap: '12px', padding: '12px 20px 20px 20px' }}>
+                <button
+                  onClick={() => { setPendingFilter('all'); setPendingSort('last-watched'); }}
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: '28px',
+                    border: '1.5px solid #ddd',
+                    backgroundColor: '#fff',
+                    color: '#000',
+                    fontWeight: '900',
+                    fontSize: '13px',
+                    letterSpacing: '0.5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  REPOR
+                </button>
+                <button
+                  onClick={() => { setGridFilter(pendingFilter); setGridSort(pendingSort); setShowGridFilters(false); }}
+                  style={{
+                    flex: 1,
+                    padding: '14px',
+                    borderRadius: '28px',
+                    border: 'none',
+                    backgroundColor: 'var(--yellow-brand)',
+                    color: '#000',
+                    fontWeight: '900',
+                    fontSize: '13px',
+                    letterSpacing: '0.5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  APLICAR
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
