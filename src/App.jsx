@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getSetting } from './db';
+import { db, getSetting, setSetting } from './db';
+import { getTVDetails, getMovieDetails } from './tmdb';
 import Series from './components/Series';
 import Filmes from './components/Filmes';
 import Discover from './components/Discover';
@@ -24,6 +25,53 @@ function App() {
     localStorage.removeItem('beetime_user_email');
     setIsAuthenticated(false);
   };
+
+  // Background migration to update local DB titles to English
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const migrateTitlesToEnglish = async () => {
+      try {
+        const migrated = await getSetting('english_titles_migrated_v2', 'false');
+        if (migrated === 'true') return;
+
+        console.log('BeeTime: Starting background English title migration...');
+
+        // Migrate shows
+        const localShows = await db.shows.toArray();
+        for (const show of localShows) {
+          try {
+            const tmdbShow = await getTVDetails(show.id);
+            if (tmdbShow && tmdbShow.name) {
+              await db.shows.update(show.id, { name: tmdbShow.name });
+            }
+          } catch (e) {
+            console.error(`Failed to migrate show ${show.id}:`, e);
+          }
+        }
+
+        // Migrate movies
+        const localMovies = await db.movies.toArray();
+        for (const movie of localMovies) {
+          try {
+            const tmdbMovie = await getMovieDetails(movie.id);
+            if (tmdbMovie && tmdbMovie.title) {
+              await db.movies.update(movie.id, { title: tmdbMovie.title });
+            }
+          } catch (e) {
+            console.error(`Failed to migrate movie ${movie.id}:`, e);
+          }
+        }
+
+        await setSetting('english_titles_migrated_v2', 'true');
+        console.log('BeeTime: English title migration finished.');
+      } catch (err) {
+        console.error('Error during title migration:', err);
+      }
+    };
+
+    migrateTitlesToEnglish();
+  }, [isAuthenticated]);
 
   const navigateToShow = (showId) => {
     setPreviousTab(activeTab);

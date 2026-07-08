@@ -14,7 +14,7 @@ async function request(endpoint, params = {}) {
 
   const queryParams = new URLSearchParams({
     api_key: apiKey,
-    language: 'pt-PT', // Prefer Portuguese
+    language: 'en-US', // Keep original English titles
     ...params
   });
 

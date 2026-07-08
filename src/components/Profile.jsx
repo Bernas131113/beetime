@@ -218,6 +218,75 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
     loadProfile();
   }, []);
 
+  // Swipe to back gesture for grid sub-view page (Séries / Filmes from profile)
+  useEffect(() => {
+    if (!gridView) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let page = null;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      page = document.querySelector('.grid-swipeable-page');
+    };
+
+    const handleTouchMove = (e) => {
+      if (!page || touchStartX >= 45) return;
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const deltaX = currentX - touchStartX;
+      const deltaY = Math.abs(currentY - touchStartY);
+
+      if (deltaX > 0 && deltaY < deltaX) {
+        page.style.transform = `translateX(${deltaX}px)`;
+        page.style.transition = 'none';
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      if (!page || touchStartX >= 45) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = Math.abs(touchEndY - touchStartY);
+
+      if (deltaX > 100 && deltaY < deltaX) {
+        page.style.transition = 'transform 0.24s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        page.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          setGridView(null);
+          setShowGridFilters(false);
+          if (page) {
+            page.style.transform = '';
+            page.style.transition = '';
+          }
+        }, 220);
+      } else {
+        page.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        page.style.transform = 'translateX(0px)';
+        setTimeout(() => {
+          if (page) {
+            page.style.transform = '';
+            page.style.transition = '';
+          }
+        }, 200);
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [gridView]);
+
   // Trigger full edit profile modal
   const handleOpenEditModal = () => {
     setEditName(username);
@@ -439,11 +508,98 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
     const isSeriesGrid = gridView === 'series';
     const items = isSeriesGrid ? followedShows : followedMovies;
     
-    // Filter items
-    const filteredItems = items; // For now show all — filters can be expanded later
+    // Filter items based on gridFilter
+    let filteredItems = [...items];
+    if (isSeriesGrid) {
+      filteredItems = filteredItems.filter(show => {
+        const showEps = watchedEps.filter(e => e.show_id === show.id);
+        const watchedCount = showEps.length;
+        const totalEps = show.number_of_episodes || 0;
+        
+        let daysSinceLastWatch = 99999;
+        if (watchedCount > 0) {
+          const lastWatchTime = showEps.reduce((max, ep) => {
+            if (!ep.watched_at) return max;
+            const t = new Date(ep.watched_at).getTime();
+            return t > max ? t : max;
+          }, 0);
+          if (lastWatchTime > 0) {
+            daysSinceLastWatch = (Date.now() - lastWatchTime) / (1000 * 60 * 60 * 24);
+          }
+        }
+
+        const isEnded = show.status === 'Ended' || show.status === 'Canceled';
+
+        if (gridFilter === 'watching') {
+          return watchedCount > 0 && watchedCount < totalEps && daysSinceLastWatch <= 30;
+        }
+        if (gridFilter === 'not-started') {
+          return watchedCount === 0;
+        }
+        if (gridFilter === 'up-to-date') {
+          return watchedCount > 0 && watchedCount >= totalEps && !isEnded;
+        }
+        if (gridFilter === 'finished') {
+          return watchedCount > 0 && watchedCount >= totalEps && isEnded;
+        }
+        if (gridFilter === 'stopped') {
+          return watchedCount > 0 && watchedCount < totalEps && daysSinceLastWatch > 30;
+        }
+        return true; // 'all'
+      });
+    } else {
+      // Movies
+      filteredItems = filteredItems.filter(movie => {
+        if (gridFilter === 'finished') {
+          return movie.watched === 1;
+        }
+        if (gridFilter === 'not-watched') {
+          return movie.watched !== 1;
+        }
+        return true; // 'all'
+      });
+    }
+    
+    // Sort items based on gridSort
+    if (gridSort === 'alpha') {
+      filteredItems.sort((a, b) => (a.name || a.title || '').localeCompare(b.name || b.title || '', 'pt-PT'));
+    } else if (gridSort === 'last-added') {
+      filteredItems.sort((a, b) => (b.id || 0) - (a.id || 0));
+    } else if (gridSort === 'last-watched') {
+      if (isSeriesGrid) {
+        filteredItems.sort((a, b) => {
+          const aEps = watchedEps.filter(e => e.show_id === a.id);
+          const bEps = watchedEps.filter(e => e.show_id === b.id);
+          const aTime = aEps.reduce((max, ep) => ep.watched_at ? Math.max(max, new Date(ep.watched_at).getTime()) : max, 0);
+          const bTime = bEps.reduce((max, ep) => ep.watched_at ? Math.max(max, new Date(ep.watched_at).getTime()) : max, 0);
+          return bTime - aTime;
+        });
+      } else {
+        filteredItems.sort((a, b) => {
+          const aTime = a.watched_at ? new Date(a.watched_at).getTime() : 0;
+          const bTime = b.watched_at ? new Date(b.watched_at).getTime() : 0;
+          return bTime - aTime;
+        });
+      }
+    }
+
+    // Navigation handlers that close the grid first
+    const handleGridNavigateToShow = (id) => {
+      setGridView(null);
+      setShowGridFilters(false);
+      onNavigateToShow(id);
+    };
+    const handleGridNavigateToMovie = (id) => {
+      setGridView(null);
+      setShowGridFilters(false);
+      onNavigateToMovie(id);
+    };
 
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)', zIndex: 500, overflowY: 'auto' }}>
+      <div 
+        className="grid-swipeable-page"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)', zIndex: 500, overflowY: 'auto' }}
+      >
         {/* Header bar */}
         <div style={{
           display: 'flex',
@@ -451,7 +607,10 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
           justifyContent: 'space-between',
           padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 12px 16px',
           borderBottom: '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-primary)'
+          backgroundColor: 'var(--bg-primary)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10
         }}>
           <button 
             onClick={() => { setGridView(null); setShowGridFilters(false); }}
@@ -492,7 +651,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
             {filteredItems.map(item => (
               <div 
                 key={item.id}
-                onClick={() => isSeriesGrid ? onNavigateToShow(item.id) : onNavigateToMovie(item.id)}
+                onClick={() => isSeriesGrid ? handleGridNavigateToShow(item.id) : handleGridNavigateToMovie(item.id)}
                 style={{
                   aspectRatio: '2/3',
                   borderRadius: '4px',
@@ -515,7 +674,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
             {filteredItems.map(item => (
               <div 
                 key={item.id}
-                onClick={() => isSeriesGrid ? onNavigateToShow(item.id) : onNavigateToMovie(item.id)}
+                onClick={() => isSeriesGrid ? handleGridNavigateToShow(item.id) : handleGridNavigateToMovie(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
