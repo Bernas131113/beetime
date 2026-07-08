@@ -452,17 +452,19 @@ export default function ImportWizard({ onImportComplete, onClose }) {
 
       try {
         const showDetails = await getTVDetails(tmdbId);
-        const seasonsData = [];
 
-        // Fetch each season detail
+        // Fetch each season detail in parallel!
+        const seasonPromises = [];
         for (let s = 1; s <= showDetails.number_of_seasons; s++) {
-          try {
-            const seasonDetails = await getTVSeason(tmdbId, s);
-            seasonsData.push(seasonDetails);
-          } catch (e) {
-            console.warn(`Could not fetch season ${s} for ${show.name}:`, e);
-          }
+          seasonPromises.push(
+            getTVSeason(tmdbId, s).catch(e => {
+              console.warn(`Could not fetch season ${s} for ${show.name}:`, e);
+              return null;
+            })
+          );
         }
+        const resolvedSeasons = await Promise.all(seasonPromises);
+        const seasonsData = resolvedSeasons.filter(s => s !== null);
 
         // Save show details locally
         await saveShowToDB(showDetails, seasonsData);
@@ -476,22 +478,23 @@ export default function ImportWizard({ onImportComplete, onClose }) {
           });
         }
 
-        // Add watched episodes
-        for (const ep of show.watchedEpisodes) {
-          await toggleEpisodeWatch(
-            tmdbId,
-            ep.season,
-            ep.episode,
-            true,
-            ep.date
-          );
+        // Add watched episodes in bulk (optimized!)
+        const watchedRecords = show.watchedEpisodes.map(ep => ({
+          show_id: tmdbId,
+          season_number: ep.season,
+          episode_number: ep.episode,
+          watched_at: ep.date || new Date().toISOString(),
+          rating: 0,
+          reaction: ''
+        }));
+        if (watchedRecords.length > 0) {
+          await db.watched_episodes.bulkPut(watchedRecords);
         }
+
         showsImported++;
       } catch (err) {
         console.error(`Error importing show ${show.name}:`, err);
       }
-
-      await new Promise(resolve => setTimeout(resolve, 300));
     }
 
     // 2. Import Movies
@@ -529,8 +532,6 @@ export default function ImportWizard({ onImportComplete, onClose }) {
       } catch (err) {
         console.error(`Error importing movie ${movie.name}:`, err);
       }
-
-      await new Promise(resolve => setTimeout(resolve, 150));
     }
 
     setImportCounts({ shows: showsImported, movies: moviesImported });

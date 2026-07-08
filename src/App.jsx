@@ -120,7 +120,7 @@ function App() {
   return (
     <div className="app-container">
       {/* Main content body */}
-      <main className="main-content">
+      <main className={activeTab === 'show-details' || activeTab === 'movie-details' ? 'main-content-details' : 'main-content'}>
 
 
         {/* Back button overlay if in settings details */}

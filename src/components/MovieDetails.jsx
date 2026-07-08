@@ -243,7 +243,7 @@ export default function MovieDetails({ movieId, onBack, onNavigateToShow, onNavi
         backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 95%), url('${getImageUrl(movie.backdrop_path, 'w780')}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        padding: '16px',
+        padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 16px 16px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between'

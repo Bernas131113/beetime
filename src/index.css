@@ -99,9 +99,14 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 20px 16px;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 84px 16px;
   overflow-y: auto;
-  padding-bottom: 84px;        /* Buffer space for bottom navigation bar */
+  width: 100%;
+}
+
+.main-content-details {
+  flex: 1;
+  overflow-y: auto;
   width: 100%;
 }
 
