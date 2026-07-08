@@ -652,7 +652,7 @@ export default function ShowDetails({ showId, onBack, onNavigateToShow, onNaviga
                       }}
                     >
                       <img 
-                        src={getImageUrl(rec.poster_path, 'w92')} 
+                        src={getImageUrl(rec.poster_path, 'w185')} 
                         alt={rec.name} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
@@ -725,7 +725,7 @@ export default function ShowDetails({ showId, onBack, onNavigateToShow, onNaviga
                         {/* Episode thumbnail */}
                         <div style={{ width: '80px', height: '54px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--bg-tertiary)' }}>
                           <img
-                            src={getImageUrl(show.poster_path, 'w92')}
+                            src={getImageUrl(show.poster_path, 'w185')}
                             alt={ep.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />

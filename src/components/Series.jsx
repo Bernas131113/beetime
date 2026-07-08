@@ -358,7 +358,7 @@ export default function Series({ onNavigateToShow, onNavigateToDiscover }) {
                   >
                     <div className="row-poster-wrapper" style={{ width: '55px', height: '80px' }}>
                       <img
-                        src={getImageUrl(item.show.poster_path, 'w92')}
+                        src={getImageUrl(item.show.poster_path, 'w185')}
                         alt={item.show.name}
                         className="row-poster"
                       />
@@ -497,7 +497,7 @@ export default function Series({ onNavigateToShow, onNavigateToDiscover }) {
                         >
                           <div className="row-poster-wrapper" style={{ width: '55px', height: '80px' }}>
                             <img
-                              src={getImageUrl(ep.show?.poster_path, 'w92')}
+                              src={getImageUrl(ep.show?.poster_path, 'w185')}
                               alt={ep.show?.name}
                               className="row-poster"
                             />

@@ -364,7 +364,7 @@ export default function Discover({ onNavigateToShow, onNavigateToMovie }) {
                 >
                   <div className="row-poster-wrapper" style={{ width: '55px', height: '80px' }}>
                     <img
-                      src={getImageUrl(item.poster_path, 'w92')}
+                      src={getImageUrl(item.poster_path, 'w185')}
                       alt={item.name || item.title}
                       className="row-poster"
                     />

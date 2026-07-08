@@ -580,7 +580,7 @@ export default function MovieDetails({ movieId, onBack, onNavigateToShow, onNavi
                       }}
                     >
                       <img 
-                        src={getImageUrl(rec.poster_path, 'w92')} 
+                        src={getImageUrl(rec.poster_path, 'w185')} 
                         alt={rec.title} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />

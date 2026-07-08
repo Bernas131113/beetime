@@ -241,7 +241,7 @@ export default function Filmes({ onNavigateToMovie, onNavigateToDiscover }) {
                   >
                     <div className="row-poster-wrapper" style={{ width: '55px', height: '80px' }}>
                       <img
-                        src={getImageUrl(movie.poster_path, 'w92')}
+                        src={getImageUrl(movie.poster_path, 'w185')}
                         alt={movie.title}
                         className="row-poster"
                       />

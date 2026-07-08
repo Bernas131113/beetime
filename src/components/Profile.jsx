@@ -1250,7 +1250,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                 }}
               >
                 <img
-                  src={getImageUrl(show.poster_path, 'w92')}
+                  src={getImageUrl(show.poster_path, 'w185')}
                   alt={show.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -1292,7 +1292,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                 }}
               >
                 <img
-                  src={getImageUrl(show.poster_path, 'w92')}
+                  src={getImageUrl(show.poster_path, 'w185')}
                   alt={show.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -1371,7 +1371,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                 }}
               >
                 <img
-                  src={getImageUrl(movie.poster_path, 'w92')}
+                  src={getImageUrl(movie.poster_path, 'w185')}
                   alt={movie.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -1413,7 +1413,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                 }}
               >
                 <img
-                  src={getImageUrl(movie.poster_path, 'w92')}
+                  src={getImageUrl(movie.poster_path, 'w185')}
                   alt={movie.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -1777,7 +1777,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                     >
                       <input type="checkbox" checked={isChecked} readOnly style={{ cursor: 'pointer' }} />
                       <div style={{ width: '30px', height: '42px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-tertiary)' }}>
-                        <img src={getImageUrl(show.poster_path, 'w92')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={getImageUrl(show.poster_path, 'w185')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>{show.name}</span>
                       <span style={{ marginLeft: 'auto', fontSize: '9px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-secondary)' }}>SÉRIE</span>
@@ -1795,7 +1795,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                     >
                       <input type="checkbox" checked={isChecked} readOnly style={{ cursor: 'pointer' }} />
                       <div style={{ width: '30px', height: '42px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-tertiary)' }}>
-                        <img src={getImageUrl(movie.poster_path, 'w92')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={getImageUrl(movie.poster_path, 'w185')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>{movie.title}</span>
                       <span style={{ marginLeft: 'auto', fontSize: '9px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-secondary)' }}>FILME</span>
@@ -1841,7 +1841,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                     >
                       <input type="checkbox" checked={isChecked} readOnly style={{ cursor: 'pointer' }} />
                       <div style={{ width: '30px', height: '42px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-tertiary)' }}>
-                        <img src={getImageUrl(show.poster_path, 'w92')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={getImageUrl(show.poster_path, 'w185')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>{show.name}</span>
                       <span style={{ marginLeft: 'auto', fontSize: '9px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-secondary)' }}>SÉRIE</span>
@@ -1859,7 +1859,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
                     >
                       <input type="checkbox" checked={isChecked} readOnly style={{ cursor: 'pointer' }} />
                       <div style={{ width: '30px', height: '42px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-tertiary)' }}>
-                        <img src={getImageUrl(movie.poster_path, 'w92')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={getImageUrl(movie.poster_path, 'w185')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <span style={{ fontSize: '13.5px', fontWeight: '800', color: 'var(--text-primary)' }}>{movie.title}</span>
                       <span style={{ marginLeft: 'auto', fontSize: '9px', fontWeight: '900', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-secondary)' }}>FILME</span>
