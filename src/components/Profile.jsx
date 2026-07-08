@@ -1261,13 +1261,13 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       </div>
 
       {/* Séries Favoritas section */}
-      {favoriteShows.length > 0 && (
-        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <Heart size={16} fill="var(--red-accent)" style={{ color: 'var(--red-accent)' }} />
-            <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Séries favoritas</h3>
-          </div>
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <Heart size={16} fill="var(--red-accent)" style={{ color: 'var(--red-accent)' }} />
+          <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Séries favoritas</h3>
+        </div>
 
+        {favoriteShows.length > 0 ? (
           <div style={{
             display: 'flex',
             gap: '10px',
@@ -1299,8 +1299,37 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            overflowX: 'auto',
+            paddingBottom: '4px',
+            margin: '0 -16px',
+            paddingLeft: '16px'
+          }}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <div
+                key={i}
+                style={{
+                  width: '90px',
+                  flexShrink: 0,
+                  borderRadius: '8px',
+                  aspectRatio: '2/3',
+                  border: '1.5px dashed var(--border-color)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-muted)'
+                }}
+              >
+                <Plus size={20} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Filmes followed section */}
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1353,13 +1382,13 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       </div>
 
       {/* Filmes Favoritos section */}
-      {favoriteMovies.length > 0 && (
-        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <Heart size={16} fill="var(--red-accent)" style={{ color: 'var(--red-accent)' }} />
-            <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Filmes favoritas</h3>
-          </div>
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <Heart size={16} fill="var(--red-accent)" style={{ color: 'var(--red-accent)' }} />
+          <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Filmes favoritos</h3>
+        </div>
 
+        {favoriteMovies.length > 0 ? (
           <div style={{
             display: 'flex',
             gap: '10px',
@@ -1391,8 +1420,37 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            overflowX: 'auto',
+            paddingBottom: '4px',
+            margin: '0 -16px',
+            paddingLeft: '16px'
+          }}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <div
+                key={i}
+                style={{
+                  width: '90px',
+                  flexShrink: 0,
+                  borderRadius: '8px',
+                  aspectRatio: '2/3',
+                  border: '1.5px dashed var(--border-color)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-muted)'
+                }}
+              >
+                <Plus size={20} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* EDIT PROFILE MODAL */}
       {showEditModal && (
