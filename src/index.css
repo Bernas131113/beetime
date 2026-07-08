@@ -1,0 +1,887 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* TV Time White/Light Theme exact variables */
+  --bg-primary: #f2f3f6;       /* Soft light off-white background */
+  --bg-secondary: #ffffff;     /* Solid white cards/headers */
+  --bg-tertiary: #eaecf0;      /* Button/pill background */
+  --border-color: #e2e5ec;     /* Light grey dividers/borders */
+  --text-primary: #111520;     /* Dark bold text */
+  --text-secondary: #626e82;   /* Medium slate grey */
+  --text-muted: #9fa7b8;       /* Light grey for overviews/dates */
+  
+  --yellow-brand: #ffcf00;     /* TV Time Amber Yellow */
+  --yellow-hover: #e5ba00;
+  --yellow-bg-alpha: rgba(255, 207, 0, 0.15);
+  
+  --red-accent: #f84f5f;
+  --green-accent: #00be80;
+  --blue-accent: #3a86ff;
+  
+  --font-sans: 'Nunito', system-ui, sans-serif;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
+  
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+/* Page constraints: Render as a centered phone app viewport on desktop */
+body {
+  background-color: #dcdfe6;   /* Light grey outer background for desktop margins */
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100vw;
+  max-width: 460px;            /* Perfect smartphone viewport width */
+  height: 100vh;
+  height: 100svh;              /* Safe viewport height on mobile */
+  background-color: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.08);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Custom TV Time Spinner */
+@keyframes tvtime-spinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tvtime-loader {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--yellow-brand);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: tvtime-spinner 0.9s linear infinite;
+  margin: 0 auto;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 0;
+  width: 100%;
+}
+
+/* Container inside the mobile shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px 16px;
+  overflow-y: auto;
+  padding-bottom: 84px;        /* Buffer space for bottom navigation bar */
+  width: 100%;
+}
+
+/* Page headers */
+h1.page-title {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+p.page-subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+/* Bottom Navigation Bar (TV Time Mobile Viewport style, always locked) */
+.app-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.mobile-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 800;
+  gap: 3px;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+  transition: var(--transition-fast);
+}
+
+.mobile-nav-link:hover {
+  color: var(--text-primary);
+}
+
+.mobile-nav-link.active {
+  color: var(--text-primary);
+}
+
+/* TV Time Watchlist Rows */
+.watchlist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.watchlist-row {
+  background-color: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.watchlist-row:hover {
+  border-color: var(--text-muted);
+}
+
+.row-poster-wrapper {
+  width: 58px;
+  height: 84px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.row-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.row-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.row-show-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+}
+
+.row-ep-title {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-behind-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--yellow-brand);
+  background-color: var(--yellow-bg-alpha);
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+  align-self: flex-start;
+  border: 1px solid rgba(255, 207, 0, 0.2);
+  margin-top: 2px;
+}
+
+.row-up-to-date-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green-accent);
+  background-color: rgba(0, 210, 141, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+  align-self: flex-start;
+  border: 1px solid rgba(0, 210, 141, 0.2);
+  margin-top: 2px;
+}
+
+/* TV Time Quick Watch Yellow Button */
+.quick-watch-btn {
+  background-color: var(--yellow-brand);
+  color: #000;
+  border: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 10px rgba(255, 207, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.quick-watch-btn:hover {
+  background-color: var(--yellow-hover);
+}
+
+.quick-watch-label {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+.quick-watch-icon {
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* TV TIME EXACT PROFILE STATS BOXES */
+.stats-hero {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.time-watched-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.time-watched-title {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.time-watched-grid {
+  display: flex;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.time-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 10px 4px;
+  border-right: 1px solid var(--border-color);
+}
+
+.time-segment:last-child {
+  border-right: none;
+}
+
+.time-val {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.time-lbl {
+  font-size: 9px;
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+
+/* Unified numerical stats card */
+.stats-numerical-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-num-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 14px 10px;
+  border-right: 1px solid var(--border-color);
+  background: none;
+}
+
+.stat-num-card:last-child {
+  border-right: none;
+}
+
+.stat-num-val {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.stat-num-lbl {
+  font-size: 9.5px;
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Grid layouts */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.media-card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.media-card:hover {
+  border-color: var(--text-muted);
+}
+
+.card-image-wrapper {
+  position: relative;
+  aspect-ratio: 2/3;
+  width: 100%;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-overlay {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+}
+
+.card-badge {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  color: var(--text-primary);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 800;
+  border: 1px solid var(--border-color);
+}
+
+.card-info {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Progress bar inside card */
+.progress-bar-container {
+  width: 100%;
+  height: 4px;
+  background-color: var(--bg-primary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--yellow-brand);
+  transition: width 0.3s ease;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--yellow-brand);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background-color: var(--yellow-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-danger {
+  background-color: rgba(248, 79, 95, 0.08);
+  color: var(--red-accent);
+  border: 1px solid rgba(248, 79, 95, 0.15);
+}
+
+.btn-icon-only {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* Tabs */
+.tabs-container {
+  display: flex;
+  gap: 4px;
+  background-color: var(--bg-secondary);
+  padding: 3px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: var(--transition-fast);
+}
+
+.tab-btn.active {
+  color: #000;
+  background-color: var(--yellow-brand);
+}
+
+/* Show details header (Stacked Mobile-First Layout) */
+.details-header {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.backdrop-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  filter: brightness(0.65) saturate(1.1);
+}
+
+.details-header-content {
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+}
+
+.details-poster {
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border-color);
+  margin-top: -80px;           /* Overlap onto backdrop image */
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.details-title-area {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.details-title {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.details-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.details-genres {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.genre-tag {
+  background-color: var(--bg-tertiary);
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.details-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Episodes check list style */
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.episode-row {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  transition: var(--transition-fast);
+}
+
+.episode-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.episode-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.episode-number-badge {
+  background-color: var(--bg-tertiary);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.episode-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.episode-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.episode-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.episode-air-date {
+  font-size: 11px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.episode-overview {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.episode-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.check-button {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.check-button.checked {
+  background-color: var(--yellow-brand);
+  color: #000;
+  border-color: var(--yellow-brand);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(220, 223, 230, 0.7); /* Light transparent overlay */
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.modal-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Emojis & Reactions */
+.reactions-container {
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.reaction-btn {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 44px;
+}
+
+.reaction-btn:hover {
+  border-color: var(--yellow-brand);
+}
+
+.reaction-btn.active {
+  background-color: var(--yellow-bg-alpha);
+  border-color: var(--yellow-brand);
+}
+
+.reaction-btn span:first-child {
+  font-size: 18px;
+}
+
+.reaction-label {
+  font-size: 8px;
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reaction-btn.active .reaction-label {
+  color: var(--yellow-brand);
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 30px 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-state-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.empty-state-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  max-width: 260px;
+}
