@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, getWatchStats } from '../db';
 import { getImageUrl } from '../tmdb';
-import { Bell, MoreHorizontal, User, ChevronRight, Plus, Tv, Star, ChevronLeft, Award, Film, Users, MessageSquare, Heart, X, Edit2, Trash2 } from 'lucide-react';
+import { Bell, MoreHorizontal, User, ChevronRight, Plus, Tv, Star, ChevronLeft, Award, Film, Users, MessageSquare, Heart, X, Edit2, Trash2, Eye, Grid, List, SlidersHorizontal } from 'lucide-react';
 
 export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSettings, onChangeTab, onLogout }) {
   const [stats, setStats] = useState({
@@ -77,6 +77,12 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
   const [selectedListItems, setSelectedListItems] = useState([]); // Array of { id, type: 'show'|'movie' }
+
+  // Grid sub-view for "Ver todas as séries/filmes" from profile
+  const [gridView, setGridView] = useState(null); // null | 'series' | 'filmes'
+  const [gridFilter, setGridFilter] = useState('all'); // 'all' | 'watching' | 'finished' | 'not-started'
+  const [showGridFilters, setShowGridFilters] = useState(false);
+  const [gridViewMode, setGridViewMode] = useState('grid'); // 'grid' | 'list'
 
   const loadProfile = async () => {
     try {
@@ -423,6 +429,202 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
     { id: 12, emoji: '🎞️', title: 'Cinephile', desc: 'Desbloqueado ao teres mais de 5 filmes vistos registados no perfil.', unlocked: watchedMovies.length >= 5 }
   ];
   const unlockedBadgesCount = BADGES.filter(b => b.unlocked).length;
+
+  // ─── GRID SUB-VIEW (All Series / All Movies from profile) ───
+  if (gridView) {
+    const isSeriesGrid = gridView === 'series';
+    const items = isSeriesGrid ? followedShows : followedMovies;
+    
+    // Filter items
+    const filteredItems = items; // For now show all — filters can be expanded later
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+        {/* Header bar */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 12px 16px',
+          borderBottom: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-primary)'
+        }}>
+          <button 
+            onClick={() => { setGridView(null); setShowGridFilters(false); }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <span style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+            {isSeriesGrid ? 'Séries' : 'Filmes'}
+          </span>
+          <button 
+            onClick={() => setGridViewMode(gridViewMode === 'grid' ? 'list' : 'grid')}
+            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+          >
+            <Eye size={20} />
+          </button>
+        </div>
+
+        {/* Grid or List of posters */}
+        {items.length === 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, padding: '60px 20px', textAlign: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '48px' }}>{isSeriesGrid ? '📺' : '🎬'}</span>
+            <p style={{ fontSize: '16px', fontWeight: '900', color: 'var(--text-primary)' }}>
+              {isSeriesGrid ? 'Ainda não segues nenhuma série.' : 'Ainda não adicionaste nenhum filme.'}
+            </p>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Explora e adiciona conteúdo para ver aqui.
+            </p>
+          </div>
+        ) : gridViewMode === 'grid' ? (
+          /* Grid view — 3 columns of posters */
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '2px',
+            padding: '8px 8px calc(100px + env(safe-area-inset-bottom, 0px)) 8px'
+          }}>
+            {filteredItems.map(item => (
+              <div 
+                key={item.id}
+                onClick={() => isSeriesGrid ? onNavigateToShow(item.id) : onNavigateToMovie(item.id)}
+                style={{
+                  aspectRatio: '2/3',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  backgroundColor: 'var(--bg-secondary)'
+                }}
+              >
+                <img 
+                  src={getImageUrl(item.poster_path, 'w342')}
+                  alt={item.name || item.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* List view — rows */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', padding: '8px 0 calc(100px + env(safe-area-inset-bottom, 0px)) 0' }}>
+            {filteredItems.map(item => (
+              <div 
+                key={item.id}
+                onClick={() => isSeriesGrid ? onNavigateToShow(item.id) : onNavigateToMovie(item.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 16px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: '50px', height: '72px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--bg-tertiary)' }}>
+                  <img 
+                    src={getImageUrl(item.poster_path, 'w185')}
+                    alt={item.name || item.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.name || item.title}
+                  </span>
+                  {isSeriesGrid && item.number_of_seasons && (
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700' }}>
+                      {item.number_of_seasons} temporada{item.number_of_seasons !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {!isSeriesGrid && item.release_date && (
+                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700' }}>
+                      {new Date(item.release_date).getFullYear()}
+                    </span>
+                  )}
+                </div>
+                <ChevronRight size={16} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Floating FILTROS pill button at bottom */}
+        <div style={{
+          position: 'fixed',
+          bottom: 'calc(30px + env(safe-area-inset-bottom, 0px))',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 200
+        }}>
+          <button 
+            onClick={() => setShowGridFilters(!showGridFilters)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'var(--yellow-brand)',
+              color: '#000',
+              border: 'none',
+              borderRadius: '24px',
+              padding: '12px 28px',
+              fontWeight: '900',
+              fontSize: '13px',
+              letterSpacing: '0.8px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+            }}
+          >
+            <SlidersHorizontal size={16} />
+            FILTROS
+          </button>
+        </div>
+
+        {/* Filter dropdown (simple overlay) */}
+        {showGridFilters && (
+          <div style={{
+            position: 'fixed',
+            bottom: 'calc(85px + env(safe-area-inset-bottom, 0px))',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 210,
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '16px',
+            padding: '8px 0',
+            minWidth: '200px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+          }}>
+            {[
+              { key: 'all', label: 'Todas' },
+              { key: 'watching', label: 'A ver' },
+              { key: 'not-started', label: 'Por começar' },
+              { key: 'finished', label: 'Terminadas' }
+            ].map(f => (
+              <button
+                key={f.key}
+                onClick={() => { setGridFilter(f.key); setShowGridFilters(false); }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  background: gridFilter === f.key ? 'rgba(255, 207, 0, 0.1)' : 'none',
+                  border: 'none',
+                  padding: '12px 20px',
+                  textAlign: 'left',
+                  color: gridFilter === f.key ? 'var(--yellow-brand)' : 'var(--text-primary)',
+                  fontWeight: gridFilter === f.key ? '900' : '700',
+                  fontSize: '14px',
+                  cursor: 'pointer'
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (showStatsDetail) {
     return (
@@ -1213,7 +1415,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       {/* Séries followed section */}
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div 
-          onClick={() => onChangeTab && onChangeTab('series')}
+          onClick={() => setGridView('series')}
           style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         >
           <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Séries</h3>
@@ -1334,7 +1536,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       {/* Filmes followed section */}
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div 
-          onClick={() => onChangeTab && onChangeTab('filmes')}
+          onClick={() => setGridView('filmes')}
           style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         >
           <h3 style={{ fontSize: '17px', fontWeight: '900', color: 'var(--text-primary)' }}>Filmes</h3>
