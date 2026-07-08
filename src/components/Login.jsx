@@ -70,27 +70,18 @@ export default function Login({ onLoginSuccess }) {
       }}>
         
         {/* Bee Logo Icon */}
-        <div style={{
-          width: '74px',
-          height: '74px',
-          borderRadius: '22px',
-          backgroundColor: '#ffcc00',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '20px',
-          boxShadow: '0 8px 24px rgba(255, 204, 0, 0.3)'
-        }}>
-          {/* Custom Yellow SVG Bee */}
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11.12 17H8.88V12.88H11.12V17ZM11.12 11.38H8.88V9.12H11.12V11.38ZM15.12 17H12.88V12.88H15.12V17ZM15.12 11.38H12.88V9.12H15.12V11.38Z" fill="#000" />
-            {/* Simple Bee wings and body path */}
-            <path d="M12 6C9.79 6 8 7.79 8 10C8 11.38 8.69 12.6 9.75 13.34C10.22 13.67 10.61 14.1 10.86 14.6L12 17L13.14 14.6C13.39 14.1 13.78 13.67 14.25 13.34C15.31 12.6 16 11.38 16 10C16 7.79 14.21 6 12 6Z" fill="#000"/>
-            <circle cx="10" cy="9.5" r="1" fill="#fff"/>
-            <circle cx="14" cy="9.5" r="1" fill="#fff"/>
-            <path d="M11 11.5C11.5 12 12.5 12 13 11.5" stroke="#fff" strokeWidth="1" strokeLinecap="round"/>
-          </svg>
-        </div>
+        <img 
+          src="/apple-touch-icon.png" 
+          alt="BeeTime Logo" 
+          style={{
+            width: '74px',
+            height: '74px',
+            borderRadius: '22px',
+            marginBottom: '20px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            border: '1.5px solid rgba(255, 255, 255, 0.08)'
+          }}
+        />
 
         {/* Branding Title */}
         <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', letterSpacing: '-0.8px', marginBottom: '6px' }}>BeeTime</h1>
