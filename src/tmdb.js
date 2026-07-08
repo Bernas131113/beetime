@@ -91,11 +91,19 @@ export async function getMovieRecommendations(id) {
 }
 
 export async function getTVVideos(id) {
-  return await request(`/tv/${id}/videos`);
+  const res = await request(`/tv/${id}/videos`);
+  if (res && res.results && res.results.length > 0) {
+    return res;
+  }
+  return await request(`/tv/${id}/videos`, { language: 'en-US' });
 }
 
 export async function getMovieVideos(id) {
-  return await request(`/movie/${id}/videos`);
+  const res = await request(`/movie/${id}/videos`);
+  if (res && res.results && res.results.length > 0) {
+    return res;
+  }
+  return await request(`/movie/${id}/videos`, { language: 'en-US' });
 }
 
 export async function getTVWatchProviders(id) {
