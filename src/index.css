@@ -100,7 +100,7 @@ body {
 .main-content {
   flex: 1;
   margin-top: env(safe-area-inset-top, 0px);
-  padding: 20px 16px calc(84px + env(safe-area-inset-bottom, 0px)) 16px;
+  padding: 0 16px calc(84px + env(safe-area-inset-bottom, 0px)) 16px;
   overflow-y: auto;
   width: 100%;
 }

@@ -235,7 +235,7 @@ export default function Discover({ onNavigateToShow, onNavigateToMovie }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingTop: '20px' }}>
       
       {/* Search input (TV Time clean style) */}
       <form onSubmit={handleSearchSubmit} style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', marginTop: '10px' }}>
@@ -250,7 +250,7 @@ export default function Discover({ onNavigateToShow, onNavigateToMovie }) {
               background: 'none',
               border: 'none',
               outline: 'none',
-              color: '#fff',
+              color: 'var(--text-primary)',
               fontSize: '15px',
               width: '100%',
               fontFamily: 'var(--font-sans)',

@@ -881,7 +881,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', margin: '0 -16px', backgroundColor: 'var(--bg-primary)', paddingBottom: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: 'var(--bg-primary)', paddingBottom: '20px' }}>
       
       {/* Profile Header Block with custom uploaded cover photo */}
       <div style={{
@@ -891,7 +891,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
         backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(10,12,20,1) 95%), url('${coverPic}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        padding: '16px',
+        padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 16px 16px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between'

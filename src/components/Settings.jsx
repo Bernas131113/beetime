@@ -99,7 +99,7 @@ export default function Settings({ onTriggerImportCSV, onLogout }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingTop: '20px' }}>
       <div>
         <h1 className="page-title">Definições</h1>
         <p className="page-subtitle">Gere a tua conta, backups e dados locais.</p>
