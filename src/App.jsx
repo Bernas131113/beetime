@@ -43,43 +43,86 @@ function App() {
     setActiveTab(previousTab);
   };
 
-  // Detect native iOS swipe-to-back gesture
+  // Detect native iOS swipe-to-back gesture with sliding animation
   useEffect(() => {
     const canGoBack = activeTab === 'show-details' || activeTab === 'movie-details' || activeTab === 'settings';
     if (!canGoBack) return;
 
     let touchStartX = 0;
     let touchStartY = 0;
+    let page = null;
 
     const handleTouchStart = (e) => {
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
+      page = document.querySelector('.swipeable-page');
+    };
+
+    const handleTouchMove = (e) => {
+      if (!page || touchStartX >= 45) return;
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const deltaX = currentX - touchStartX;
+      const deltaY = Math.abs(currentY - touchStartY);
+
+      // Only slide page if user is swiping right and not scrolling vertically
+      if (deltaX > 0 && deltaY < deltaX) {
+        page.style.transform = `translateX(${deltaX}px)`;
+        page.style.transition = 'none';
+      }
     };
 
     const handleTouchEnd = (e) => {
+      if (!page || touchStartX >= 45) return;
       const touchEndX = e.changedTouches[0].clientX;
       const touchEndY = e.changedTouches[0].clientY;
       
       const deltaX = touchEndX - touchStartX;
       const deltaY = Math.abs(touchEndY - touchStartY);
 
-      // Swipe from left edge (startX < 45px) to right (deltaX > 80px) with low vertical movement (deltaY < 60px)
-      if (touchStartX < 45 && deltaX > 80 && deltaY < 60) {
-        handleBack();
+      if (deltaX > 100 && deltaY < deltaX) {
+        // Complete swipe: slide page off-screen to the right
+        page.style.transition = 'transform 0.24s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        page.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          handleBack();
+          if (page) {
+            page.style.transform = '';
+            page.style.transition = '';
+          }
+        }, 220);
+      } else {
+        // Cancel swipe: slide back to origin
+        page.style.transition = 'transform 0.2s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        page.style.transform = 'translateX(0px)';
+        setTimeout(() => {
+          if (page) {
+            page.style.transform = '';
+            page.style.transition = '';
+          }
+        }, 200);
       }
     };
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [activeTab, previousTab]);
 
+  const getDashboardTab = () => {
+    const isDetail = activeTab === 'show-details' || activeTab === 'movie-details' || activeTab === 'settings';
+    return isDetail ? previousTab : activeTab;
+  };
+
   const renderContent = () => {
-    switch (activeTab) {
+    const tabToRender = getDashboardTab();
+    switch (tabToRender) {
       case 'series':
         return (
           <Series 
@@ -111,31 +154,6 @@ function App() {
             onLogout={handleLogout}
           />
         );
-      case 'settings':
-        return (
-          <Settings 
-            onTriggerImportCSV={() => setShowCSVWizard(true)} 
-            onLogout={handleLogout}
-          />
-        );
-      case 'show-details':
-        return (
-          <ShowDetails 
-            showId={selectedShowId} 
-            onBack={handleBack} 
-            onNavigateToShow={navigateToShow}
-            onNavigateToMovie={navigateToMovie}
-          />
-        );
-      case 'movie-details':
-        return (
-          <MovieDetails 
-            movieId={selectedMovieId} 
-            onBack={handleBack} 
-            onNavigateToShow={navigateToShow}
-            onNavigateToMovie={navigateToMovie}
-          />
-        );
       default:
         return (
           <Series 
@@ -152,23 +170,13 @@ function App() {
     return <Login onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
 
+  const dashboardTab = getDashboardTab();
+  const mainClass = dashboardTab === 'perfil' ? 'main-content-details' : 'main-content';
+
   return (
     <div className="app-container">
-      {/* Main content body */}
-      <main className={activeTab === 'show-details' || activeTab === 'movie-details' || activeTab === 'perfil' ? 'main-content-details' : 'main-content'}>
-
-
-        {/* Back button overlay if in settings details */}
-        {activeTab === 'settings' && (
-          <button 
-            onClick={handleBack} 
-            className="btn btn-secondary" 
-            style={{ marginBottom: '20px' }}
-          >
-            ← Voltar ao Perfil
-          </button>
-        )}
-
+      {/* Main content body (Dashboard remains mounted underneath overlays) */}
+      <main className={mainClass}>
         {renderContent()}
       </main>
 
@@ -207,6 +215,42 @@ function App() {
         </button>
       </div>
 
+      {/* Detail/Settings Overlay Pages (absolutely positioned to allow swipe animations) */}
+      {activeTab === 'settings' && (
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto', padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 40px 16px' }}>
+          <button 
+            onClick={handleBack} 
+            className="btn btn-secondary" 
+            style={{ marginBottom: '20px' }}
+          >
+            ← Voltar ao Perfil
+          </button>
+          <Settings onTriggerImportCSV={() => setShowCSVWizard(true)} onLogout={handleLogout} />
+        </div>
+      )}
+
+      {activeTab === 'show-details' && (
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto' }}>
+          <ShowDetails 
+            showId={selectedShowId} 
+            onBack={handleBack} 
+            onNavigateToShow={navigateToShow}
+            onNavigateToMovie={navigateToMovie}
+          />
+        </div>
+      )}
+
+      {activeTab === 'movie-details' && (
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto' }}>
+          <MovieDetails 
+            movieId={selectedMovieId} 
+            onBack={handleBack} 
+            onNavigateToShow={navigateToShow}
+            onNavigateToMovie={navigateToMovie}
+          />
+        </div>
+      )}
+
       {/* CSV Import Modal Wizard */}
       {showCSVWizard && (
         <ImportWizard 
@@ -215,7 +259,7 @@ function App() {
           }} 
           onClose={() => {
             setShowCSVWizard(false);
-            setActiveTab('profile'); // Go back to profile to see updated stats
+            setActiveTab('perfil'); // Go back to profile to see updated stats
           }} 
         />
       )}
