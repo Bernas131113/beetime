@@ -18,23 +18,12 @@ function App() {
   const [selectedShowId, setSelectedShowId] = useState(null);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   
-  const [hasTMDBKey, setHasTMDBKey] = useState(true);
   const [showCSVWizard, setShowCSVWizard] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('beetime_user_email');
     setIsAuthenticated(false);
   };
-
-  // Check if TMDB key is configured on load
-  const checkApiKey = async () => {
-    const key = await getSetting('tmdb_api_key', '');
-    setHasTMDBKey(!!key);
-  };
-
-  useEffect(() => {
-    checkApiKey();
-  }, [activeTab]); // Recheck when switching tabs
 
   const navigateToShow = (showId) => {
     setPreviousTab(activeTab);
@@ -132,36 +121,7 @@ function App() {
     <div className="app-container">
       {/* Main content body */}
       <main className="main-content">
-        {/* Missing API Key Alert */}
-        {!hasTMDBKey && activeTab !== 'settings' && (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            background: 'var(--yellow-bg-alpha)', 
-            border: '1px solid var(--yellow-brand)', 
-            padding: '12px 20px', 
-            borderRadius: '16px', 
-            marginBottom: '24px',
-            flexWrap: 'wrap',
-            gap: '12px',
-            boxShadow: 'var(--shadow-sm)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <AlertCircle size={20} style={{ color: 'var(--yellow-brand)' }} />
-              <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>
-                Configura a tua Chave de API do TMDB para carregar posters e pesquisar séries.
-              </span>
-            </div>
-            <button 
-              className="btn btn-primary" 
-              style={{ padding: '6px 12px', fontSize: '12px' }}
-              onClick={() => setActiveTab('settings')}
-            >
-              Configurar Agora
-            </button>
-          </div>
-        )}
+
 
         {/* Back button overlay if in settings details */}
         {activeTab === 'settings' && (
@@ -217,7 +177,6 @@ function App() {
         <ImportWizard 
           onImportComplete={(count) => {
             console.log(`Importadas ${count} séries.`);
-            checkApiKey(); // Refresh state
           }} 
           onClose={() => {
             setShowCSVWizard(false);
