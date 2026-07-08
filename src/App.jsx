@@ -43,6 +43,41 @@ function App() {
     setActiveTab(previousTab);
   };
 
+  // Detect native iOS swipe-to-back gesture
+  useEffect(() => {
+    const canGoBack = activeTab === 'show-details' || activeTab === 'movie-details' || activeTab === 'settings';
+    if (!canGoBack) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = Math.abs(touchEndY - touchStartY);
+
+      // Swipe from left edge (startX < 45px) to right (deltaX > 80px) with low vertical movement (deltaY < 60px)
+      if (touchStartX < 45 && deltaX > 80 && deltaY < 60) {
+        handleBack();
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [activeTab, previousTab]);
+
   const renderContent = () => {
     switch (activeTab) {
       case 'series':
