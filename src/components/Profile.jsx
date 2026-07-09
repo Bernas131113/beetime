@@ -3,7 +3,7 @@ import { db, getWatchStats } from '../db';
 import { getImageUrl } from '../tmdb';
 import { Bell, MoreHorizontal, User, ChevronRight, Plus, Tv, Star, ChevronLeft, Award, Film, Users, MessageSquare, Heart, X, Edit2, Trash2, Eye, Grid, List, SlidersHorizontal, Search } from 'lucide-react';
 
-export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSettings, onChangeTab, onLogout }) {
+export default function Profile({ activeTab, onNavigateToShow, onNavigateToMovie, onOpenSettings, onChangeTab, onLogout }) {
   const [stats, setStats] = useState({
     totalShows: 0,
     totalEpisodes: 0,
@@ -221,7 +221,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
 
   // Swipe to back gesture for grid sub-view page (Séries / Filmes from profile)
   useEffect(() => {
-    if (!gridView) return;
+    if (!gridView || activeTab !== 'perfil') return;
 
     let touchStartX = 0;
     let touchStartY = 0;
@@ -286,7 +286,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [gridView]);
+  }, [gridView, activeTab]);
 
   // Trigger full edit profile modal
   const handleOpenEditModal = () => {

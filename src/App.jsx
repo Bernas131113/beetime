@@ -19,6 +19,7 @@ function App() {
   const [selectedShowId, setSelectedShowId] = useState(null);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
   const [profileKey, setProfileKey] = useState(0);
+  const [detailHistory, setDetailHistory] = useState([]); // array of { type: 'show' | 'movie', id: number }
   
   const [showCSVWizard, setShowCSVWizard] = useState(false);
 
@@ -75,21 +76,43 @@ function App() {
   }, [isAuthenticated]);
 
   const navigateToShow = (showId) => {
-    setPreviousTab(activeTab);
+    if (activeTab !== 'show-details' && activeTab !== 'movie-details') {
+      setPreviousTab(activeTab);
+    }
+    setDetailHistory(prev => [...prev, { type: 'show', id: showId }]);
     setSelectedShowId(showId);
     setActiveTab('show-details');
   };
 
   const navigateToMovie = (movieId) => {
-    setPreviousTab(activeTab);
+    if (activeTab !== 'show-details' && activeTab !== 'movie-details') {
+      setPreviousTab(activeTab);
+    }
+    setDetailHistory(prev => [...prev, { type: 'movie', id: movieId }]);
     setSelectedMovieId(movieId);
     setActiveTab('movie-details');
   };
 
   const handleBack = () => {
-    setSelectedShowId(null);
-    setSelectedMovieId(null);
-    setActiveTab(previousTab);
+    if (detailHistory.length > 1) {
+      const newHistory = detailHistory.slice(0, -1);
+      const lastEntry = newHistory[newHistory.length - 1];
+      setDetailHistory(newHistory);
+      if (lastEntry.type === 'show') {
+        setSelectedMovieId(null);
+        setSelectedShowId(lastEntry.id);
+        setActiveTab('show-details');
+      } else {
+        setSelectedShowId(null);
+        setSelectedMovieId(lastEntry.id);
+        setActiveTab('movie-details');
+      }
+    } else {
+      setDetailHistory([]);
+      setSelectedShowId(null);
+      setSelectedMovieId(null);
+      setActiveTab(previousTab);
+    }
   };
 
   // Detect native iOS swipe-to-back gesture with sliding animation
@@ -197,6 +220,7 @@ function App() {
         return (
           <Profile 
             key={profileKey}
+            activeTab={activeTab}
             onNavigateToShow={navigateToShow} 
             onNavigateToMovie={navigateToMovie} 
             onOpenSettings={() => { setPreviousTab('perfil'); setActiveTab('settings'); }}
@@ -233,7 +257,7 @@ function App() {
       {/* Bottom Navigation Bar (TV Time Mobile Frame style) */}
       <div className="app-bottom-nav">
         <button 
-          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('series'); }} 
+          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setDetailHistory([]); setActiveTab('series'); }} 
           className={`mobile-nav-link ${isActive('series') ? 'active' : ''}`}
         >
           <Tv size={20} />
@@ -241,7 +265,7 @@ function App() {
         </button>
 
         <button 
-          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('filmes'); }} 
+          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setDetailHistory([]); setActiveTab('filmes'); }} 
           className={`mobile-nav-link ${isActive('filmes') ? 'active' : ''}`}
         >
           <Clapperboard size={20} />
@@ -249,7 +273,7 @@ function App() {
         </button>
 
         <button 
-          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('explorar'); }} 
+          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setDetailHistory([]); setActiveTab('explorar'); }} 
           className={`mobile-nav-link ${isActive('explorar') ? 'active' : ''}`}
         >
           <Search size={20} />
@@ -257,7 +281,7 @@ function App() {
         </button>
 
         <button 
-          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('perfil'); setProfileKey(prev => prev + 1); }} 
+          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setDetailHistory([]); setActiveTab('perfil'); setProfileKey(prev => prev + 1); }} 
           className={`mobile-nav-link ${isActive('perfil') || isActive('settings') ? 'active' : ''}`}
         >
           <User size={20} />
