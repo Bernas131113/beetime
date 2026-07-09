@@ -291,7 +291,7 @@ function App() {
 
       {/* Detail/Settings Overlay Pages (absolutely positioned to allow swipe animations) */}
       {activeTab === 'settings' && (
-        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto', padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 40px 16px' }}>
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 1000, overflowY: 'auto', padding: 'calc(16px + env(safe-area-inset-top, 0px)) 16px 40px 16px' }}>
           <button 
             onClick={handleBack} 
             className="btn btn-secondary" 
@@ -304,7 +304,7 @@ function App() {
       )}
 
       {activeTab === 'show-details' && (
-        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto' }}>
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 1000, overflowY: 'auto' }}>
           <ShowDetails 
             showId={selectedShowId} 
             onBack={handleBack} 
@@ -315,7 +315,7 @@ function App() {
       )}
 
       {activeTab === 'movie-details' && (
-        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 150, overflowY: 'auto' }}>
+        <div className="swipeable-page" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'var(--bg-primary)', zIndex: 1000, overflowY: 'auto' }}>
           <MovieDetails 
             movieId={selectedMovieId} 
             onBack={handleBack} 
