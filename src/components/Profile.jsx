@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, getWatchStats } from '../db';
 import { getImageUrl } from '../tmdb';
-import { Bell, MoreHorizontal, User, ChevronRight, Plus, Tv, Star, ChevronLeft, Award, Film, Users, MessageSquare, Heart, X, Edit2, Trash2, Eye, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Bell, MoreHorizontal, User, ChevronRight, Plus, Tv, Star, ChevronLeft, Award, Film, Users, MessageSquare, Heart, X, Edit2, Trash2, Eye, Grid, List, SlidersHorizontal, Search } from 'lucide-react';
 
 export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSettings, onChangeTab, onLogout }) {
   const [stats, setStats] = useState({
@@ -50,6 +50,7 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
 
   // Stats Details Screen
   const [showStatsDetail, setShowStatsDetail] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
   const [statsTab, setStatsTab] = useState('series'); // 'series' | 'filmes'
   const [selectedBadge, setSelectedBadge] = useState(null);
 
@@ -583,15 +584,11 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
       }
     }
 
-    // Navigation handlers that close the grid first
+    // Navigation handlers that preserve the grid view state when navigating to details
     const handleGridNavigateToShow = (id) => {
-      setGridView(null);
-      setShowGridFilters(false);
       onNavigateToShow(id);
     };
     const handleGridNavigateToMovie = (id) => {
-      setGridView(null);
-      setShowGridFilters(false);
       onNavigateToMovie(id);
     };
 
@@ -890,6 +887,103 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
             </div>
           </>
         )}
+      </div>
+    );
+  }
+
+  if (showFollowing) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', backgroundColor: 'var(--bg-primary)', margin: '0 -16px', paddingBottom: '30px' }}>
+        {/* Top Header */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', gap: '12px' }}>
+          <button 
+            onClick={() => setShowFollowing(false)}
+            style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)' }}>A seguir</span>
+        </div>
+
+        {/* List of followed users */}
+        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Search bar placeholder (disabled) */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            backgroundColor: 'var(--bg-secondary)', 
+            borderRadius: '12px', 
+            padding: '10px 14px', 
+            gap: '10px',
+            border: '1px solid var(--border-color)',
+            marginBottom: '8px'
+          }}>
+            <Search size={18} style={{ color: 'var(--text-secondary)' }} />
+            <input 
+              type="text" 
+              placeholder="Procurar amigos..." 
+              disabled
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: 'var(--text-primary)', 
+                fontSize: '14px', 
+                outline: 'none', 
+                width: '100%' 
+              }} 
+            />
+          </div>
+
+          {/* User Row: Esposo Bernardo Alves */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            backgroundColor: 'var(--bg-secondary)', 
+            padding: '16px', 
+            borderRadius: '16px', 
+            border: '1px solid var(--border-color)' 
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              {/* Avatar */}
+              <div style={{ 
+                width: '48px', 
+                height: '48px', 
+                borderRadius: '50%', 
+                background: 'linear-gradient(135deg, var(--yellow-brand), #ff9f0a)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: '#000', 
+                fontWeight: '900', 
+                fontSize: '16px' 
+              }}>
+                BA
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontSize: '15px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                  Esposo Bernardo Alves
+                </span>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  @esposo_bernardo
+                </span>
+              </div>
+            </div>
+
+            {/* Badge indicating "A seguir" (Following) */}
+            <span style={{ 
+              backgroundColor: 'var(--bg-tertiary)', 
+              color: 'var(--text-primary)', 
+              fontSize: '12px', 
+              fontWeight: '800', 
+              padding: '6px 14px', 
+              borderRadius: '20px', 
+              border: '1px solid var(--border-color)' 
+            }}>
+              A seguir
+            </span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -1461,8 +1555,11 @@ export default function Profile({ onNavigateToShow, onNavigateToMovie, onOpenSet
         paddingBottom: '16px',
         margin: '0 16px'
       }}>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: '1px solid var(--border-color)' }}>
-          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)' }}>{followedShows.length}</span>
+        <div 
+          onClick={() => setShowFollowing(true)}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: '1px solid var(--border-color)', cursor: 'pointer' }}
+        >
+          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)' }}>1</span>
           <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700' }}>a seguir</span>
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: '1px solid var(--border-color)' }}>

@@ -18,6 +18,7 @@ function App() {
   const [previousTab, setPreviousTab] = useState('series');
   const [selectedShowId, setSelectedShowId] = useState(null);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
+  const [profileKey, setProfileKey] = useState(0);
   
   const [showCSVWizard, setShowCSVWizard] = useState(false);
 
@@ -195,6 +196,7 @@ function App() {
       case 'perfil':
         return (
           <Profile 
+            key={profileKey}
             onNavigateToShow={navigateToShow} 
             onNavigateToMovie={navigateToMovie} 
             onOpenSettings={() => { setPreviousTab('perfil'); setActiveTab('settings'); }}
@@ -255,7 +257,7 @@ function App() {
         </button>
 
         <button 
-          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('perfil'); }} 
+          onClick={() => { setSelectedShowId(null); setSelectedMovieId(null); setActiveTab('perfil'); setProfileKey(prev => prev + 1); }} 
           className={`mobile-nav-link ${isActive('perfil') || isActive('settings') ? 'active' : ''}`}
         >
           <User size={20} />
